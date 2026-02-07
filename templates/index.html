@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1>Welcome to your Dashboard, {{ current_user.username }}!</h1>
+        <p>This is your personal space to generate and view sports intelligence dossiers.</p>
+        
+        <div id="game-selection" class="mt-4">
+            <h3>Select a Game</h3>
+            <p>Select a game from the list below to generate a new dossier.</p>
+            <ul class="list-group">
+                {% for game in games %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ game.name }}
+                        <a href="{{ url_for('generate_dossier', event_id=game.id, game_name=game.name) }}" class="btn btn-sm btn-outline-primary">Generate Dossier</a>
+                    </li>
+                {% else %}
+                    <li class="list-group-item">No games available right now.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div id="dossier-history" class="mt-5">
+            <h3>Your Dossier History</h3>
+            <p>Here are the dossiers you have generated previously.</p>
+            <ul class="list-group">
+                {% for dossier in dossiers %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ dossier.game_name }}
+                        <small class="text-muted">{{ dossier.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        <a href="{{ url_for('view_dossier', dossier_id=dossier.id) }}" class="btn btn-sm btn-outline-secondary">View</a>
+                    </li>
+                {% else %}
+                    <li class="list-group-item">You haven't generated any dossiers yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

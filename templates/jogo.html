@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}Dossiê: {{ dossier.game_name }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Dossiê: {{ dossier.game_name }}</h1>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3>Full-Time Statistics</h3>
+        </div>
+        <div class="card-body">
+            {% if dossier.statistics %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Statistic</th>
+                            <th scope="col" class="text-center">Home</th>
+                            <th scope="col" class="text-center">Away</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat, values in dossier.statistics.items() %}
+                        <tr>
+                            <td><strong>{{ stat }}</strong></td>
+                            <td class="text-center">{{ values.home }}</td>
+                            <td class="text-center">{{ values.away }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-muted">No statistics available for this match.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-4">Back to Dashboard</a>
+</div>
+{% endblock %}
