@@ -87,7 +87,7 @@
                                     <div class="fw-bold text-success">{{ dossie.nome_jogo }}</div>
                                     <small class="text-muted"><i class="far fa-clock me-1"></i>{{ dossie.data_criacao.strftime('%d/%m - %H:%M') }}</small>
                                 </div>
-                                {% if dossie.valor_esperado > 0 %}
+                                {% if dossie.valor_esperado and dossie.valor_esperado > 0 %}
                                     <span class="badge bg-success text-dark rounded-pill" title="+EV Encontrado">+EV</span>
                                 {% else %}
                                     <span class="badge bg-secondary rounded-pill"><i class="fas fa-chevron-right"></i></span>

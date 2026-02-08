@@ -34,7 +34,7 @@ with app.app_context():
 
 @gerenciador_login.user_loader
 def carregar_usuario(id_usuario):
-    return Usuario.query.get(int(id_usuario))
+    return db.session.get(Usuario, int(id_usuario))
 
 @app.route('/')
 def inicio():
