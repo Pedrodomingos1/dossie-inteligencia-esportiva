@@ -60,10 +60,11 @@ class TesteAplicacao(unittest.TestCase):
         # Mocking external calls including AI Analysis and Odds
         # Patches target where they are imported in web.rotas
         with patch('web.rotas.buscar_jogos_do_dia') as mock_buscar_jogos:
-            mock_buscar_jogos.return_value = [{'id': 123, 'nome': 'Time A vs Time B'}]
+            mock_buscar_jogos.return_value = [{'id': 123, 'nome': 'Time A vs Time B', 'homeTeam': 'Time A', 'awayTeam': 'Time B', 'status': 'scheduled', 'time': '16:00'}]
             resposta = self.app.get('/painel', follow_redirects=True)
             self.assertEqual(resposta.status_code, 200)
-            self.assertIn(b'Time A vs Time B', resposta.data)
+            self.assertIn(b'Time A', resposta.data)
+            self.assertIn(b'Time B', resposta.data)
 
         # Logout
         resposta = self.app.get('/sair', follow_redirects=True)
