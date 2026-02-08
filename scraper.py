@@ -1,16 +1,29 @@
 import requests
+import random
 from datetime import datetime
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
-}
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15"
+]
+
+def get_headers():
+    return {
+        "User-Agent": random.choice(USER_AGENTS),
+        "Referer": "https://www.sofascore.com/",
+        "Origin": "https://www.sofascore.com"
+    }
 
 def get_daily_games():
     """Fetches a list of games for the current day from the SofaScore API."""
     try:
         today_str = datetime.now().strftime('%Y-%m-%d')
         url = f"https://www.sofascore.com/api/v1/sport/football/scheduled-events/{today_str}"
-        response = requests.get(url, headers=HEADERS)
+        response = requests.get(url, headers=get_headers())
         response.raise_for_status()
         data = response.json()
         
@@ -32,7 +45,7 @@ def get_game_statistics(event_id):
     """Fetches detailed statistics for a specific game event from the SofaScore API."""
     try:
         url = f"https://www.sofascore.com/api/v1/event/{event_id}/statistics"
-        response = requests.get(url, headers=HEADERS)
+        response = requests.get(url, headers=get_headers())
         response.raise_for_status()
         data = response.json()
         

@@ -1,27 +1,33 @@
 {% extends "layout.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Entrar - Dossiê Esportivo{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h2>Login</h2>
-            </div>
-            <div class="card-body">
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-circle fa-4x text-primary mb-3"></i>
+                    <h2 class="h4 mb-0">Bem-vindo de volta!</h2>
+                    <p class="text-muted small">Faça login para acessar seu painel.</p>
+                </div>
+
                 <form method="POST" action="{{ url_for('login') }}">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Nome de Usuário" required>
+                        <label for="username"><i class="fas fa-user me-2"></i>Usuário</label>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Senha" required>
+                        <label for="password"><i class="fas fa-lock me-2"></i>Senha</label>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">Entrar</button>
+                    </div>
                 </form>
             </div>
-            <div class="card-footer text-center">
-                <small>Need an account? <a href="{{ url_for('register') }}">Sign up here</a></small>
+            <div class="card-footer bg-light text-center py-3">
+                <small class="text-muted">Ainda não tem uma conta? <a href="{{ url_for('register') }}" class="fw-bold">Cadastre-se aqui</a></small>
             </div>
         </div>
     </div>

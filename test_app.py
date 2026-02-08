@@ -22,7 +22,8 @@ class AppTestCase(unittest.TestCase):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         # Should redirect to login since not authenticated
-        self.assertIn(b'Login', response.data)
+        # In Portuguese: "Entrar"
+        self.assertIn(b'Entrar', response.data)
 
     def test_register(self):
         response = self.app.post('/register', data=dict(
@@ -30,6 +31,8 @@ class AppTestCase(unittest.TestCase):
             password='testpassword'
         ), follow_redirects=True)
         self.assertEqual(response.status_code, 200)
+        # In Portuguese: "account has been created" might be in flash message which we didn't translate yet in app.py
+        # But let's check for redirect to login page content
         self.assertIn(b'Your account has been created!', response.data)
 
         with app.app_context():
@@ -52,10 +55,6 @@ class AppTestCase(unittest.TestCase):
             password='testpassword'
         ), follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        # After login, should redirect to dashboard.
-        # However, dashboard calls get_daily_games which might fail or be slow.
-        # We'll check if we are redirected to dashboard (or if the response contains dashboard elements)
-        # Note: If dashboard fails due to scraper, we might get 500.
 
         # Let's mock the scraper to avoid external calls
         with patch('app.get_daily_games') as mock_get_games:
@@ -67,14 +66,15 @@ class AppTestCase(unittest.TestCase):
         # Logout
         response = self.app.get('/logout', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Login', response.data)
+        # In Portuguese: "Entrar"
+        self.assertIn(b'Entrar', response.data)
 
     def test_dashboard_access_denied(self):
         response = self.app.get('/dashboard', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         # Should be redirected to login
-        self.assertIn(b'Login', response.data)
-        # And flash message usually says "Please log in to access this page." (default Flask-Login)
+        # In Portuguese: "Entrar"
+        self.assertIn(b'Entrar', response.data)
 
 if __name__ == '__main__':
     unittest.main()
