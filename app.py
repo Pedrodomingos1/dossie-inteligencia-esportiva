@@ -42,10 +42,34 @@ def inicio():
         return redirect(url_for('painel'))
     return redirect(url_for('entrar'))
 
+@app.template_filter('formatar_nome')
+def formatar_nome_filtro(s):
+    if not s:
+        return ""
+    return s.replace('_', ' ').replace('-', ' ').title()
+
 @app.route('/painel')
 @login_required
 def painel():
     jogos = buscar_jogos_do_dia()
+
+    # MOCK PARA DEBUG: Se não houver jogos (falha no scraper ou dia sem jogos),
+    # inserir jogos fictícios para validar o layout.
+    if not jogos:
+        class JogoMock:
+            def __init__(self, id, nome, torneio):
+                self.id = id
+                self.nome = nome
+                self.torneio = torneio
+
+        jogos = [
+            JogoMock("1", "Flamengo vs Vasco_da_Gama", "Carioca"),
+            JogoMock("2", "Manchester_City_FC vs Real_Madrid_Club_de_Futbol", "Champions League"),
+            JogoMock("3", "Corinthians vs Palmeiras", "Paulistão"),
+            JogoMock("4", "Borussia_Dortmund vs Bayern_Munchen", "Bundesliga")
+        ]
+        flash('API de jogos indisponível no momento. Exibindo partidas de exemplo.', 'warning')
+
     dossies = Dossie.query.filter_by(id_usuario=current_user.id).order_by(Dossie.data_criacao.desc()).all()
     return render_template('index.html', jogos=jogos, dossies=dossies)
 

@@ -4,9 +4,9 @@
 {% block content %}
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-between align-items-center">
-        <div>
+        <div class="overflow-hidden">
             <h1 class="display-5 text-success fw-bold"><i class="fas fa-file-contract me-2"></i>Dossiê Técnico</h1>
-            <h3 class="text-white">{{ dossie.nome_jogo }}</h3>
+            <h3 class="text-white text-break">{{ dossie.nome_jogo|formatar_nome }}</h3>
             <p class="text-secondary"><small><i class="far fa-calendar-alt me-1"></i>Gerado em: {{ dossie.data_criacao.strftime('%d/%m/%Y %H:%M') }}</small></p>
         </div>
         <div class="no-print">

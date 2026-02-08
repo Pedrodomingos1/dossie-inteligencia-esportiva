@@ -22,43 +22,43 @@
                 {% for jogo in jogos %}
                     <!-- Tratamento de Nomes e Imagens -->
                     {% set equipes = jogo.nome.split(' vs ') %}
-                    {% set casa = equipes[0] %}
-                    {% set fora = equipes[1] if equipes|length > 1 else 'Desconhecido' %}
+                    {% set casa = equipes[0]|formatar_nome %}
+                    {% set fora = (equipes[1] if equipes|length > 1 else 'Desconhecido')|formatar_nome %}
                     <!-- Placeholder Logos usando UI Avatars -->
                     {% set logo_casa = "https://ui-avatars.com/api/?name=" + casa + "&background=0D8ABC&color=fff&size=64&font-size=0.4" %}
                     {% set logo_fora = "https://ui-avatars.com/api/?name=" + fora + "&background=random&color=fff&size=64&font-size=0.4" %}
 
                     <div class="cartao-partida">
-                        <div class="d-flex align-items-center flex-grow-1">
+                        <div class="d-flex align-items-center flex-grow-1 overflow-hidden">
                             <!-- Horário (Mockado pois scraper não retorna hora, mas estrutura visual pronta) -->
-                            <div class="hora-jogo border-end border-secondary pe-3 me-3">
+                            <div class="hora-jogo border-end border-secondary pe-2 me-2 d-none d-sm-block">
                                 <span class="d-block text-white small">16:00</span> <!-- Placeholder -->
                                 <small class="text-muted" style="font-size: 0.7rem;">Ao Vivo</small>
                             </div>
 
                             <!-- Equipes e Logos -->
-                            <div class="equipes-container row w-100 g-0 align-items-center">
-                                <div class="col-5 d-flex align-items-center justify-content-end gap-2 text-end">
-                                    <span class="nome-equipe text-white d-none d-md-block">{{ casa }}</span>
-                                    <span class="nome-equipe text-white d-md-none">{{ casa[:3]|upper }}</span>
-                                    <img src="{{ logo_casa }}" alt="{{ casa }}" class="logo-equipe rounded-circle border border-secondary">
+                            <div class="equipes-container row w-100 g-0 align-items-center flex-nowrap">
+                                <div class="col-5 d-flex align-items-center justify-content-end gap-2 text-end overflow-hidden">
+                                    <span class="nome-equipe text-white d-none d-md-block text-truncate" title="{{ casa }}">{{ casa }}</span>
+                                    <span class="nome-equipe text-white d-md-none text-truncate" style="font-size: 0.9rem;">{{ casa }}</span>
+                                    <img src="{{ logo_casa }}" alt="{{ casa }}" class="logo-equipe rounded-circle border border-secondary flex-shrink-0">
                                 </div>
 
-                                <div class="col-2 text-center text-muted fw-bold">vs</div>
+                                <div class="col-2 text-center text-muted fw-bold flex-shrink-0" style="min-width: 30px;">vs</div>
 
-                                <div class="col-5 d-flex align-items-center justify-content-start gap-2 text-start">
-                                    <img src="{{ logo_fora }}" alt="{{ fora }}" class="logo-equipe rounded-circle border border-secondary">
-                                    <span class="nome-equipe text-white d-none d-md-block">{{ fora }}</span>
-                                    <span class="nome-equipe text-white d-md-none">{{ fora[:3]|upper }}</span>
+                                <div class="col-5 d-flex align-items-center justify-content-start gap-2 text-start overflow-hidden">
+                                    <img src="{{ logo_fora }}" alt="{{ fora }}" class="logo-equipe rounded-circle border border-secondary flex-shrink-0">
+                                    <span class="nome-equipe text-white d-none d-md-block text-truncate" title="{{ fora }}">{{ fora }}</span>
+                                    <span class="nome-equipe text-white d-md-none text-truncate" style="font-size: 0.9rem;">{{ fora }}</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Botão Ação -->
-                        <div class="ms-3 border-start border-secondary ps-3">
+                        <div class="ms-2 border-start border-secondary ps-2 flex-shrink-0">
                             <a href="{{ url_for('gerar_dossie', id_evento=jogo.id, nome_jogo=jogo.nome) }}" class="btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-2" title="Gerar Análise +EV">
                                 <i class="fas fa-chart-line"></i>
-                                <span class="d-none d-sm-inline">Analisar</span>
+                                <span class="d-none d-md-inline">Analisar</span>
                             </a>
                         </div>
                     </div>

@@ -11,3 +11,13 @@ venv/
 
 # Instance folder with database
 instance/
+dossie.db
+
+# Logs
+*.log
+app.log
+
+# Temporary files
+*.png
+*.jpg
+verification/
