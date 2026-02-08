@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import patch
 from app import app, db
-from models import User, Dossier
+from models import Usuario, Dossie
 
-class AppTestCase(unittest.TestCase):
+class TesteAplicacao(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for testing
@@ -18,63 +18,63 @@ class AppTestCase(unittest.TestCase):
             db.session.remove()
             db.drop_all()
 
-    def test_home_redirect(self):
-        response = self.app.get('/', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+    def test_redirecionamento_inicio(self):
+        resposta = self.app.get('/', follow_redirects=True)
+        self.assertEqual(resposta.status_code, 200)
         # Should redirect to login since not authenticated
         # In Portuguese: "Entrar"
-        self.assertIn(b'Entrar', response.data)
+        self.assertIn(b'Entrar', resposta.data)
 
-    def test_register(self):
-        response = self.app.post('/register', data=dict(
-            username='testuser',
-            password='testpassword'
+    def test_cadastro(self):
+        resposta = self.app.post('/cadastro', data=dict(
+            username='usuario_teste',
+            password='senha_teste'
         ), follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(resposta.status_code, 200)
         # In Portuguese: "account has been created" might be in flash message which we didn't translate yet in app.py
         # But let's check for redirect to login page content
-        self.assertIn(b'Your account has been created!', response.data)
+        self.assertIn(b'Sua conta foi criada!', resposta.data.decode('utf-8').encode('utf-8'))
 
         with app.app_context():
-            user = User.query.filter_by(username='testuser').first()
-            self.assertIsNotNone(user)
+            usuario = Usuario.query.filter_by(nome_usuario='usuario_teste').first()
+            self.assertIsNotNone(usuario)
 
-    def test_login_logout(self):
+    def test_entrar_sair(self):
         # Create user
         with app.app_context():
             from flask_bcrypt import Bcrypt
             bcrypt = Bcrypt(app)
-            hashed_pw = bcrypt.generate_password_hash('testpassword').decode('utf-8')
-            user = User(username='testuser', password=hashed_pw)
-            db.session.add(user)
+            senha_hash = bcrypt.generate_password_hash('senha_teste').decode('utf-8')
+            usuario = Usuario(nome_usuario='usuario_teste', senha=senha_hash)
+            db.session.add(usuario)
             db.session.commit()
 
         # Login
-        response = self.app.post('/login', data=dict(
-            username='testuser',
-            password='testpassword'
+        resposta = self.app.post('/entrar', data=dict(
+            username='usuario_teste',
+            password='senha_teste'
         ), follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(resposta.status_code, 200)
 
         # Let's mock the scraper to avoid external calls
-        with patch('app.get_daily_games') as mock_get_games:
-            mock_get_games.return_value = [{'id': 123, 'name': 'Team A vs Team B'}]
-            response = self.app.get('/dashboard', follow_redirects=True)
-            self.assertEqual(response.status_code, 200)
-            self.assertIn(b'Team A vs Team B', response.data)
+        with patch('app.buscar_jogos_do_dia') as mock_buscar_jogos:
+            mock_buscar_jogos.return_value = [{'id': 123, 'nome': 'Time A vs Time B'}]
+            resposta = self.app.get('/painel', follow_redirects=True)
+            self.assertEqual(resposta.status_code, 200)
+            self.assertIn(b'Time A vs Time B', resposta.data)
 
         # Logout
-        response = self.app.get('/logout', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+        resposta = self.app.get('/sair', follow_redirects=True)
+        self.assertEqual(resposta.status_code, 200)
         # In Portuguese: "Entrar"
-        self.assertIn(b'Entrar', response.data)
+        self.assertIn(b'Entrar', resposta.data)
 
-    def test_dashboard_access_denied(self):
-        response = self.app.get('/dashboard', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+    def test_acesso_negado_painel(self):
+        resposta = self.app.get('/painel', follow_redirects=True)
+        self.assertEqual(resposta.status_code, 200)
         # Should be redirected to login
         # In Portuguese: "Entrar"
-        self.assertIn(b'Entrar', response.data)
+        self.assertIn(b'Entrar', resposta.data)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,22 +1,22 @@
-from scraper import get_daily_games, get_game_statistics
+from scraper import buscar_jogos_do_dia, buscar_estatisticas_jogo
 import json
 
-def verify_scraper():
-    print("Testing get_daily_games()...")
-    games = get_daily_games()
-    print(f"Games found: {len(games)}")
-    if games:
-        print(f"First game: {games[0]}")
-        event_id = games[0]['id']
-        print(f"\nTesting get_game_statistics({event_id})...")
-        stats = get_game_statistics(event_id)
-        if stats:
-             print("Statistics retrieved successfully.")
-             # print(json.dumps(stats, indent=2)) # Too verbose
+def verificar_coletor():
+    print("Testando buscar_jogos_do_dia()...")
+    jogos = buscar_jogos_do_dia()
+    print(f"Jogos encontrados: {len(jogos)}")
+    if jogos:
+        print(f"Primeiro jogo: {jogos[0]}")
+        id_evento = jogos[0]['id']
+        print(f"\nTestando buscar_estatisticas_jogo({id_evento})...")
+        estatisticas = buscar_estatisticas_jogo(id_evento)
+        if estatisticas:
+             print("Estatísticas recuperadas com sucesso.")
+             # print(json.dumps(estatisticas, indent=2))
         else:
-             print("Failed to retrieve statistics or no statistics available yet.")
+             print("Falha ao recuperar estatísticas ou nenhuma estatística disponível ainda.")
     else:
-        print("No games found for today.")
+        print("Nenhum jogo encontrado para hoje.")
 
 if __name__ == "__main__":
-    verify_scraper()
+    verificar_coletor()

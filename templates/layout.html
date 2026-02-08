@@ -32,7 +32,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark no-print">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}"><i class="fas fa-futbol me-2"></i>Dossiê Esportivo</a>
+            <a class="navbar-brand" href="{{ url_for('inicio') }}"><i class="fas fa-futbol me-2"></i>Dossiê Esportivo</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -40,17 +40,17 @@
                 <ul class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <span class="nav-link text-light">Bem-vindo, {{ current_user.username }}</span>
+                            <span class="nav-link text-light">Bem-vindo, {{ current_user.nome_usuario }}</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-outline-light btn-sm ms-2" href="{{ url_for('logout') }}">Sair</a>
+                            <a class="nav-link btn btn-outline-light btn-sm ms-2" href="{{ url_for('sair') }}">Sair</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">Entrar</a>
+                            <a class="nav-link" href="{{ url_for('entrar') }}">Entrar</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">Cadastrar</a>
+                            <a class="nav-link" href="{{ url_for('cadastro') }}">Cadastrar</a>
                         </li>
                     {% endif %}
                 </ul>

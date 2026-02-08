@@ -11,56 +11,54 @@ USER_AGENTS = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15"
 ]
 
-def get_headers():
+def obter_cabecalhos():
     return {
         "User-Agent": random.choice(USER_AGENTS),
         "Referer": "https://www.sofascore.com/",
         "Origin": "https://www.sofascore.com"
     }
 
-def get_daily_games():
-    """Fetches a list of games for the current day from the SofaScore API."""
+def buscar_jogos_do_dia():
     try:
-        today_str = datetime.now().strftime('%Y-%m-%d')
-        url = f"https://www.sofascore.com/api/v1/sport/football/scheduled-events/{today_str}"
-        response = requests.get(url, headers=get_headers())
-        response.raise_for_status()
-        data = response.json()
+        hoje_str = datetime.now().strftime('%Y-%m-%d')
+        url = f"https://www.sofascore.com/api/v1/sport/football/scheduled-events/{hoje_str}"
+        resposta = requests.get(url, headers=obter_cabecalhos())
+        resposta.raise_for_status()
+        dados = resposta.json()
         
-        games = []
-        for event in data.get('events', [])[:25]:
-            games.append({
-                'id': event['id'],
-                'name': f"{event['homeTeam']['name']} vs {event['awayTeam']['name']}"
+        jogos = []
+        for evento in dados.get('events', [])[:25]:
+            jogos.append({
+                'id': evento['id'],
+                'nome': f"{evento['homeTeam']['name']} vs {evento['awayTeam']['name']}"
             })
-        return games
+        return jogos
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching daily games: {e}")
+        print(f"Erro ao buscar jogos do dia: {e}")
         return []
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"Erro inesperado: {e}")
         return []
 
-def get_game_statistics(event_id):
-    """Fetches detailed statistics for a specific game event from the SofaScore API."""
+def buscar_estatisticas_jogo(id_evento):
     try:
-        url = f"https://www.sofascore.com/api/v1/event/{event_id}/statistics"
-        response = requests.get(url, headers=get_headers())
-        response.raise_for_status()
-        data = response.json()
+        url = f"https://www.sofascore.com/api/v1/event/{id_evento}/statistics"
+        resposta = requests.get(url, headers=obter_cabecalhos())
+        resposta.raise_for_status()
+        dados = resposta.json()
         
-        stats = {}
-        if 'statistics' in data:
-            for period in data['statistics']:
-                if period['period'] == 'ALL':
-                    for group in period['groups']:
-                        for item in group['statisticsItems']:
-                            stats[item['name']] = {'home': item['home'], 'away': item['away']}
-            return stats
+        estatisticas = {}
+        if 'statistics' in dados:
+            for periodo in dados['statistics']:
+                if periodo['period'] == 'ALL':
+                    for grupo in periodo['groups']:
+                        for item in grupo['statisticsItems']:
+                            estatisticas[item['name']] = {'casa': item['home'], 'fora': item['away']}
+            return estatisticas
         return None
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching game statistics: {e}")
+        print(f"Erro ao buscar estatísticas do jogo: {e}")
         return None
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"Erro inesperado: {e}")
         return None
