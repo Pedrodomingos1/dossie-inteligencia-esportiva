@@ -1,21 +1,23 @@
 import unittest
 from unittest.mock import patch
-from app import app, db
-from models import Usuario, Dossie
+from web import criar_app
+from web.extensoes import db
+from web.modelos import Usuario, Dossie
 import json
 
 class TesteAplicacao(unittest.TestCase):
     def setUp(self):
-        app.config['TESTING'] = True
-        app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for testing
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-        self.app = app.test_client()
+        self.app_instance = criar_app()
+        self.app_instance.config['TESTING'] = True
+        self.app_instance.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for testing
+        self.app_instance.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        self.app = self.app_instance.test_client()
 
-        with app.app_context():
+        with self.app_instance.app_context():
             db.create_all()
 
     def tearDown(self):
-        with app.app_context():
+        with self.app_instance.app_context():
             db.session.remove()
             db.drop_all()
 
@@ -34,15 +36,15 @@ class TesteAplicacao(unittest.TestCase):
         self.assertEqual(resposta.status_code, 200)
         self.assertIn(b'Sua conta foi criada!', resposta.data.decode('utf-8').encode('utf-8'))
 
-        with app.app_context():
+        with self.app_instance.app_context():
             usuario = Usuario.query.filter_by(nome_usuario='usuario_teste').first()
             self.assertIsNotNone(usuario)
 
     def test_entrar_sair(self):
         # Create user
-        with app.app_context():
+        with self.app_instance.app_context():
             from flask_bcrypt import Bcrypt
-            bcrypt = Bcrypt(app)
+            bcrypt = Bcrypt(self.app_instance)
             senha_hash = bcrypt.generate_password_hash('senha_teste').decode('utf-8')
             usuario = Usuario(nome_usuario='usuario_teste', senha=senha_hash)
             db.session.add(usuario)
@@ -56,7 +58,8 @@ class TesteAplicacao(unittest.TestCase):
         self.assertEqual(resposta.status_code, 200)
 
         # Mocking external calls including AI Analysis and Odds
-        with patch('app.buscar_jogos_do_dia') as mock_buscar_jogos:
+        # Patches target where they are imported in web.rotas
+        with patch('web.rotas.buscar_jogos_do_dia') as mock_buscar_jogos:
             mock_buscar_jogos.return_value = [{'id': 123, 'nome': 'Time A vs Time B'}]
             resposta = self.app.get('/painel', follow_redirects=True)
             self.assertEqual(resposta.status_code, 200)
@@ -70,15 +73,13 @@ class TesteAplicacao(unittest.TestCase):
     def test_gerar_dossie_com_ia(self):
         """Testa se o dossiê é gerado e salva os campos de IA e EV."""
         # Create user
-        with app.app_context():
+        with self.app_instance.app_context():
             from flask_bcrypt import Bcrypt
-            bcrypt = Bcrypt(app)
+            bcrypt = Bcrypt(self.app_instance)
             senha_hash = bcrypt.generate_password_hash('senha_teste').decode('utf-8')
             usuario = Usuario(nome_usuario='usuario_teste', senha=senha_hash)
             db.session.add(usuario)
             db.session.commit()
-
-            # Login manual via session transaction not easy with test_client, so login via post
 
         self.app.post('/entrar', data=dict(
             username='usuario_teste',
@@ -86,9 +87,9 @@ class TesteAplicacao(unittest.TestCase):
         ), follow_redirects=True)
 
         # Mocks
-        with patch('app.buscar_estatisticas_jogo') as mock_stats, \
-             patch('app.buscar_odds_simuladas') as mock_odds, \
-             patch('analise.AnalistaIA.analisar_partida') as mock_ia:
+        with patch('web.rotas.buscar_estatisticas_jogo') as mock_stats, \
+             patch('web.rotas.buscar_odds_simuladas') as mock_odds, \
+             patch('services.ia.AnalistaIA.analisar_partida') as mock_ia:
 
             mock_stats.return_value = {"Ball possession": {"casa": "55%", "fora": "45%"}}
             mock_odds.return_value = {'casa': 2.5, 'empate': 3.2, 'fora': 2.8}
@@ -103,7 +104,7 @@ class TesteAplicacao(unittest.TestCase):
             self.assertEqual(resposta.status_code, 200)
 
             # Check if saved in DB
-            with app.app_context():
+            with self.app_instance.app_context():
                 dossie = Dossie.query.first()
                 self.assertIsNotNone(dossie)
                 self.assertEqual(dossie.probabilidade_modelo, 0.6)

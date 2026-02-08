@@ -1,77 +1,54 @@
-# Dossiê Inteligência Esportiva
+# Dossiê Inteligência Esportiva - Enterprise & PWA
 
-Um aplicativo web desenvolvido em Flask que permite a analistas esportivos gerarem dossiês e relatórios detalhados sobre partidas de futebol, utilizando dados extraídos em tempo real.
+**Versão 2.0 (Mobile-First)**
 
-## Funcionalidades
+Um sistema robusto e modular para análise de futebol, construído com arquitetura profissional em Python/Flask e otimizado como Progressive Web App (PWA) para instalação em dispositivos móveis.
 
-*   **Autenticação de Usuários:** Sistema seguro de registro e login para usuários.
-*   **Visualização de Jogos do Dia:** Exibe uma lista dos principais jogos de futebol que ocorrerão no dia.
-*   **Geração de Dossiês:** Com um clique, gere um dossiê detalhado com estatísticas de uma partida específica (ex: posse de bola, chutes a gol, etc.).
-*   **Histórico de Dossiês:** Os dossiês gerados ficam salvos e associados à conta do usuário para consulta futura.
-*   **Coleta de Dados:** Utiliza web scraping para buscar informações do [SofaScore](https://www.sofascore.com/).
+## Funcionalidades Principais
 
-## Tecnologia Utilizada
+*   **Arquitetura Enterprise:** Código limpo e desacoplado, separando lógica de apresentação (`web/`), serviços de integração (`services/`) e estratégias de cálculo (`strategies/`).
+*   **PWA Nativo:** Instale diretamente no Android/iOS. Funciona offline (Service Worker), tem ícone dedicado e design adaptativo.
+*   **Análise +EV:** Algoritmos proprietários para cálculo de Valor Esperado positivo em apostas.
+*   **Integração IA:** Simulação de analista esportivo com geração de insights automáticos.
+*   **Design Responsivo:** Interface "Dark Mode" otimizada para uso com uma mão em telas de smartphones.
 
-*   **Backend:**
-    *   [Flask](https://flask.palletsprojects.com/): Microframework web em Python.
-    *   [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/): ORM para interação com o banco de dados.
-    *   [Flask-Login](https://flask-login.readthedocs.io/): Gerenciamento de sessões de usuário.
-    *   [Flask-Bcrypt](https://flask-bcrypt.readthedocs.io/): Hashing de senhas.
-    *   [Requests](https://requests.readthedocs.io/): Para realizar as requisições HTTP no scraper.
-*   **Frontend:**
-    *   HTML5 / CSS3
-    *   [Templates Jinja2](https://jinja.palletsprojects.com/)
-*   **Banco de Dados:**
-    *   SQLite (padrão em desenvolvimento)
+## Estrutura do Projeto
 
-## Configuração e Instalação
+*   `run.py`: Ponto único de entrada da aplicação.
+*   `web/`: Camada de apresentação (Flask App, Templates, Static, Rotas).
+    *   `modelos.py`: Definições do banco de dados (SQLAlchemy).
+    *   `rotas.py`: Definição de endpoints e views.
+*   `services/`: Integrações externas.
+    *   `raspagem.py`: Coleta de dados (SofaScore).
+    *   `ia.py`: Inteligência Artificial para análise.
+    *   `notificacao.py`: Envio de alertas (Telegram).
+*   `strategies/`: Lógica de negócios pura.
+    *   `analise.py`: Motor de cálculo estatístico.
 
-Siga os passos abaixo para configurar e rodar o projeto em seu ambiente local.
+## Como Rodar
 
-**Pré-requisitos:**
-*   Python 3.8+
-*   Git
+**Pré-requisitos:** Python 3.10+
 
-**Passos:**
-
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://github.com/Pedrodomingos1/dossie-inteligencia-esportiva.git
-    cd dossie-inteligencia-esportiva
-    ```
-
-2.  **Crie e ative um ambiente virtual:**
-    ```bash
-    # Para Windows
-    python -m venv venv
-    venv\Scripts\activate
-
-    # Para macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-
-3.  **Instale as dependências:**
+1.  **Instale as dependências:**
     ```bash
     pip install -r requirements.txt
     ```
 
-4.  **Configure as variáveis de ambiente:**
-    Crie um arquivo chamado `.env` na raiz do projeto e adicione a seguinte variável. Use uma chave secreta forte.
-    ```
-    SECRET_KEY='sua_chave_secreta_aqui'
-    ```
+2.  **Configure o ambiente:**
+    Crie um arquivo `.env` na raiz (opcional, o sistema usa defaults seguros para dev).
 
-5.  **Inicie a aplicação:**
+3.  **Execute a aplicação:**
     ```bash
-    python app.py
+    python run.py
     ```
-    O aplicativo estará disponível em `http://127.0.0.1:5000`.
+    Acesse em: `http://127.0.0.1:5000`
 
-## Como Usar
+## Instalação Mobile (PWA)
 
-1.  Acesse a página e crie uma conta de usuário.
-2.  Faça o login com suas credenciais.
-3.  Na dashboard, você verá a lista de jogos do dia.
-4.  Clique em "Gerar Dossiê" em um dos jogos para criar e visualizar as estatísticas detalhadas.
-5.  Você pode revisitar seus dossiês gerados a qualquer momento a partir da dashboard.
+1.  Acesse a URL do sistema pelo navegador do celular (Chrome/Safari).
+2.  Toque em "Compartilhar" (iOS) ou Menu (Android).
+3.  Selecione **"Adicionar à Tela de Início"**.
+4.  O Dossiê será instalado como um aplicativo nativo.
+
+---
+Desenvolvido por **Pedro Domingos** | Jessé Produções
