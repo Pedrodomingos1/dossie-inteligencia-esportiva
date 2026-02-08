@@ -20,7 +20,7 @@
     <div class="col-12" id="games-container">
         {% if jogos %}
             {% for jogo in jogos %}
-                <div class="sofa-card" data-status="{{ jogo.status }}">
+                <div class="sofa-card {% if jogo.confianca == 5 %}glow-gold{% endif %}" data-status="{{ jogo.status }}">
                     <div class="match-info">
                         <div class="match-time">
                             {% if jogo.status == 'live' %}
@@ -30,6 +30,13 @@
                             {% endif %}
                         </div>
                         <div class="teams-container">
+                            <!-- Selo de Confiança -->
+                            <div class="confidence-stars" title="Confiança IA: {{ jogo.confianca }}/5">
+                                {% for i in range(5) %}
+                                    <i class="fas fa-star {% if i < jogo.confianca %}gold{% endif %}"></i>
+                                {% endfor %}
+                            </div>
+
                             <div class="team-row">
                                 <img src="https://ui-avatars.com/api/?name={{ jogo.homeTeam }}&background=333&color=fff&length=2" class="team-logo" alt="{{ jogo.homeTeam }}">
                                 <span class="team-name">{{ jogo.homeTeam }}</span>
@@ -38,18 +45,43 @@
                                 <img src="https://ui-avatars.com/api/?name={{ jogo.awayTeam }}&background=333&color=fff&length=2" class="team-logo" alt="{{ jogo.awayTeam }}">
                                 <span class="team-name">{{ jogo.awayTeam }}</span>
                             </div>
+
+                            <!-- Métricas de Tendência e Momentum -->
+                            {% if jogo.tendencia %}
+                                <span class="trend-text"><i class="fas fa-chart-line me-1"></i>{{ jogo.tendencia }}</span>
+                            {% endif %}
+
+                            {% if jogo.momentum %}
+                                <div class="momentum-chart" title="Pressão de Ataque (Momentum)">
+                                    {% for valor in jogo.momentum %}
+                                        <div class="momentum-bar" style="height: {{ valor }}%; opacity: {{ loop.index / 10 }};"></div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
 
-                    <div class="d-flex flex-column align-items-end gap-2">
-                        <!-- Odds Fictícias para Visual -->
-                        <div class="d-flex gap-1 mb-2 d-none d-md-flex">
+                    <div class="d-flex flex-column align-items-end gap-2" style="min-width: 140px;">
+                        <!-- Odds e Probabilidade -->
+                        <div class="d-flex gap-1 mb-1 d-none d-md-flex">
                             <span class="odds-badge" title="Vitória Casa">1.85</span>
                             <span class="odds-badge" title="Empate">3.40</span>
                             <span class="odds-badge" title="Vitória Fora">4.10</span>
                         </div>
+
+                        <!-- Barra de Probabilidade Real -->
+                        <div class="w-100 mb-2">
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>Prob. IA</span>
+                                <span class="text-white">{{ jogo.probabilidade_ia }}%</span>
+                            </div>
+                            <div class="probability-container">
+                                <div class="probability-fill" style="width: {{ jogo.probabilidade_ia }}%;"></div>
+                            </div>
+                        </div>
+
                         <a href="{{ url_for('principal.gerar_dossie', id_evento=jogo.id, nome_jogo=jogo.nome) }}" class="btn-premium">
-                            <i class="fas fa-lock me-1"></i> Gerar Dossiê Premium
+                            <i class="fas fa-lock me-1"></i> Gerar Dossiê
                         </a>
                     </div>
                 </div>

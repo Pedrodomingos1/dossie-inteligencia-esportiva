@@ -209,3 +209,65 @@ body {
         text-align: center;
     }
 }
+
+/* KPIs Avançados (Probabilidade, Momentum, Confiança) */
+.confidence-stars {
+    color: #444;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
+
+.confidence-stars .fa-star.gold {
+    color: #ffd700;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.glow-gold {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.15) !important;
+    border-color: rgba(255, 215, 0, 0.4) !important;
+}
+
+.trend-text {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--accent-color);
+    margin-top: 4px;
+    display: block;
+}
+
+.probability-container {
+    width: 100%;
+    height: 6px;
+    background-color: #333;
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.probability-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-color), #3498db);
+    border-radius: 3px;
+}
+
+.momentum-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 30px;
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
+.momentum-bar {
+    width: 4px;
+    background-color: var(--accent-color);
+    border-radius: 1px 1px 0 0;
+    transition: height 0.3s;
+}
+
+/* Ajustes no Card para acomodar KPIs */
+.sofa-card .teams-container {
+    gap: 4px;
+}

@@ -60,7 +60,19 @@ class TesteAplicacao(unittest.TestCase):
         # Mocking external calls including AI Analysis and Odds
         # Patches target where they are imported in web.rotas
         with patch('web.rotas.buscar_jogos_do_dia') as mock_buscar_jogos:
-            mock_buscar_jogos.return_value = [{'id': 123, 'nome': 'Time A vs Time B', 'homeTeam': 'Time A', 'awayTeam': 'Time B', 'status': 'scheduled', 'time': '16:00'}]
+            # Mock data including new KPIs
+            mock_buscar_jogos.return_value = [{
+                'id': 123,
+                'nome': 'Time A vs Time B',
+                'homeTeam': 'Time A',
+                'awayTeam': 'Time B',
+                'status': 'scheduled',
+                'time': '16:00',
+                'probabilidade_ia': 75,
+                'confianca': 4,
+                'tendencia': 'Tendência de teste',
+                'momentum': [50, 60, 70]
+            }]
             resposta = self.app.get('/painel', follow_redirects=True)
             self.assertEqual(resposta.status_code, 200)
             self.assertIn(b'Time A', resposta.data)
