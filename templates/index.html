@@ -1,39 +1,108 @@
 {% extends "layout.html" %}
-{% block title %}Dashboard{% endblock %}
-{% block content %}
-    <div class="container">
-        <h1>Welcome to your Dashboard, {{ current_user.username }}!</h1>
-        <p>This is your personal space to generate and view sports intelligence dossiers.</p>
-        
-        <div id="game-selection" class="mt-4">
-            <h3>Select a Game</h3>
-            <p>Select a game from the list below to generate a new dossier.</p>
-            <ul class="list-group">
-                {% for game in games %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ game.name }}
-                        <a href="{{ url_for('generate_dossier', event_id=game.id, game_name=game.name) }}" class="btn btn-sm btn-outline-primary">Generate Dossier</a>
-                    </li>
-                {% else %}
-                    <li class="list-group-item">No games available right now.</li>
-                {% endfor %}
-            </ul>
-        </div>
+{% block title %}Painel de Controle - Dossiê Esportivo{% endblock %}
 
-        <div id="dossier-history" class="mt-5">
-            <h3>Your Dossier History</h3>
-            <p>Here are the dossiers you have generated previously.</p>
-            <ul class="list-group">
-                {% for dossier in dossiers %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ dossier.game_name }}
-                        <small class="text-muted">{{ dossier.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
-                        <a href="{{ url_for('view_dossier', dossier_id=dossier.id) }}" class="btn btn-sm btn-outline-secondary">View</a>
-                    </li>
-                {% else %}
-                    <li class="list-group-item">You haven't generated any dossiers yet.</li>
+{% block content %}
+<div class="row mb-5">
+    <div class="col-md-12 text-center">
+        <h1 class="display-4 fw-bold text-white mb-3">Painel de Controle</h1>
+        <p class="lead text-muted">Inteligência Esportiva para Decisões de Valor</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Seção de Jogos do Dia -->
+    <div class="col-lg-8 mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="text-white border-start border-success border-4 ps-3">Jogos de Hoje</h4>
+            <span class="badge bg-success rounded-pill px-3 py-2 text-dark fw-bold">{{ jogos|length }} Disponíveis</span>
+        </div>
+        
+        <div class="container-jogos">
+            {% if jogos %}
+                {% for jogo in jogos %}
+                    <!-- Tratamento de Nomes e Imagens -->
+                    {% set equipes = jogo.nome.split(' vs ') %}
+                    {% set casa = equipes[0] %}
+                    {% set fora = equipes[1] if equipes|length > 1 else 'Desconhecido' %}
+                    <!-- Placeholder Logos usando UI Avatars -->
+                    {% set logo_casa = "https://ui-avatars.com/api/?name=" + casa + "&background=0D8ABC&color=fff&size=64&font-size=0.4" %}
+                    {% set logo_fora = "https://ui-avatars.com/api/?name=" + fora + "&background=random&color=fff&size=64&font-size=0.4" %}
+
+                    <div class="cartao-partida">
+                        <div class="d-flex align-items-center flex-grow-1">
+                            <!-- Horário (Mockado pois scraper não retorna hora, mas estrutura visual pronta) -->
+                            <div class="hora-jogo border-end border-secondary pe-3 me-3">
+                                <span class="d-block text-white small">16:00</span> <!-- Placeholder -->
+                                <small class="text-muted" style="font-size: 0.7rem;">Ao Vivo</small>
+                            </div>
+
+                            <!-- Equipes e Logos -->
+                            <div class="equipes-container row w-100 g-0 align-items-center">
+                                <div class="col-5 d-flex align-items-center justify-content-end gap-2 text-end">
+                                    <span class="nome-equipe text-white d-none d-md-block">{{ casa }}</span>
+                                    <span class="nome-equipe text-white d-md-none">{{ casa[:3]|upper }}</span>
+                                    <img src="{{ logo_casa }}" alt="{{ casa }}" class="logo-equipe rounded-circle border border-secondary">
+                                </div>
+
+                                <div class="col-2 text-center text-muted fw-bold">vs</div>
+
+                                <div class="col-5 d-flex align-items-center justify-content-start gap-2 text-start">
+                                    <img src="{{ logo_fora }}" alt="{{ fora }}" class="logo-equipe rounded-circle border border-secondary">
+                                    <span class="nome-equipe text-white d-none d-md-block">{{ fora }}</span>
+                                    <span class="nome-equipe text-white d-md-none">{{ fora[:3]|upper }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botão Ação -->
+                        <div class="ms-3 border-start border-secondary ps-3">
+                            <a href="{{ url_for('gerar_dossie', id_evento=jogo.id, nome_jogo=jogo.nome) }}" class="btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-2" title="Gerar Análise +EV">
+                                <i class="fas fa-chart-line"></i>
+                                <span class="d-none d-sm-inline">Analisar</span>
+                            </a>
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+            {% else %}
+                <div class="text-center py-5 border border-secondary rounded bg-dark-primary">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Nenhum jogo encontrado para hoje. Tente atualizar.</p>
+                </div>
+            {% endif %}
         </div>
     </div>
+
+    <!-- Seção de Histórico de Dossiês (Sidebar) -->
+    <div class="col-lg-4">
+        <div class="card border-secondary shadow-lg">
+            <div class="card-header bg-dark-primary text-white border-bottom border-secondary py-3">
+                <h5 class="mb-0"><i class="fas fa-history text-success me-2"></i>Histórico Recente</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if dossies %}
+                    <div class="list-group list-group-flush">
+                        {% for dossie in dossies %}
+                            <a href="{{ url_for('visualizar_dossie', id_dossie=dossie.id) }}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center py-3">
+                                <div>
+                                    <div class="fw-bold text-success">{{ dossie.nome_jogo }}</div>
+                                    <small class="text-muted"><i class="far fa-clock me-1"></i>{{ dossie.data_criacao.strftime('%d/%m - %H:%M') }}</small>
+                                </div>
+                                {% if dossie.valor_esperado > 0 %}
+                                    <span class="badge bg-success text-dark rounded-pill" title="+EV Encontrado">+EV</span>
+                                {% else %}
+                                    <span class="badge bg-secondary rounded-pill"><i class="fas fa-chevron-right"></i></span>
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-folder-open fa-3x text-secondary mb-3"></i>
+                        <p class="text-muted small">Seus dossiês gerados aparecerão aqui.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
