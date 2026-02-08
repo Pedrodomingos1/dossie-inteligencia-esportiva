@@ -2,7 +2,7 @@ import os
 import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from notificador import MensageiroTelegram
+from services.notificacao import MensageiroTelegram
 from dotenv import load_dotenv
 from unittest.mock import MagicMock
 

@@ -12,7 +12,7 @@
                     <p class="text-muted small">Faça login para acessar seu painel.</p>
                 </div>
 
-                <form method="POST" action="{{ url_for('entrar') }}">
+                <form method="POST" action="{{ url_for('principal.entrar') }}">
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="username" name="username" placeholder="Nome de Usuário" required>
                         <label for="username"><i class="fas fa-user me-2"></i>Usuário</label>
@@ -27,7 +27,7 @@
                 </form>
             </div>
             <div class="card-footer bg-light text-center py-3">
-                <small class="text-muted">Ainda não tem uma conta? <a href="{{ url_for('cadastro') }}" class="fw-bold">Cadastre-se aqui</a></small>
+                <small class="text-muted">Ainda não tem uma conta? <a href="{{ url_for('principal.cadastro') }}" class="fw-bold">Cadastre-se aqui</a></small>
             </div>
         </div>
     </div>

@@ -6,3 +6,7 @@ Flask-Login
 Flask-Bcrypt
 selenium
 webdriver-manager
+greenlet
+playwright
+pyee
+typing_extensions

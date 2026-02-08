@@ -1,4 +1,4 @@
-from scraper import buscar_jogos_do_dia, buscar_estatisticas_jogo
+from services.raspagem import buscar_jogos_do_dia, buscar_estatisticas_jogo
 import json
 
 def verificar_coletor():

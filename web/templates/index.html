@@ -21,7 +21,7 @@
                 {% if jogos %}
                     <div class="list-group">
                         {% for jogo in jogos %}
-                            <a href="{{ url_for('gerar_dossie', id_evento=jogo.id, nome_jogo=jogo.nome) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('principal.gerar_dossie', id_evento=jogo.id, nome_jogo=jogo.nome) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                 <div>
                                     <i class="fas fa-futbol text-success me-2"></i>
                                     <strong>{{ jogo.nome }}</strong>
@@ -51,7 +51,7 @@
                 {% if dossies %}
                     <div class="list-group">
                         {% for dossie in dossies %}
-                            <a href="{{ url_for('visualizar_dossie', id_dossie=dossie.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('principal.visualizar_dossie', id_dossie=dossie.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                 <div>
                                     <i class="fas fa-file-alt text-secondary me-2"></i>
                                     <strong>{{ dossie.nome_jogo }}</strong>
