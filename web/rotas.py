@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 import json
+import os
 
 from .extensoes import db, bcrypt
 from .modelos import Usuario, Dossie
@@ -16,6 +17,10 @@ def inicio():
     if current_user.is_authenticated:
         return redirect(url_for('principal.painel'))
     return redirect(url_for('principal.entrar'))
+
+@bp_principal.route('/sw.js')
+def service_worker():
+    return send_from_directory(os.path.join(current_app.root_path, 'static'), 'sw.js', mimetype='application/javascript')
 
 @bp_principal.route('/painel')
 @login_required
