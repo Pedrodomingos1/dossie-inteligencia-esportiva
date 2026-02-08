@@ -1,5 +1,11 @@
 # Environment variables
 .env
+.env.local
+
+# Database
+dossie.db
+*.db
+*.sqlite3
 
 # Python cache
 __pycache__/
@@ -8,6 +14,10 @@ __pycache__/
 # Virtual environment
 .venv/
 venv/
+env/
 
-# Instance folder with database
+# Instance folder
 instance/
+
+# Logs
+*.log
