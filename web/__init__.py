@@ -1,10 +1,24 @@
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask
 from .extensoes import db, bcrypt, gerenciador_login
 from .modelos import Usuario
 
 def criar_app():
     app = Flask(__name__)
+
+    # Configuração de Logging
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
+    file_handler = RotatingFileHandler('logs/dossie_error.log', maxBytes=10240, backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.ERROR)
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.ERROR)
+    app.logger.info('Dossiê Inteligência Esportiva - Inicialização')
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'chave_secreta_padrao_para_desenvolvimento')
 
     # Configuração robusta para o caminho do banco de dados

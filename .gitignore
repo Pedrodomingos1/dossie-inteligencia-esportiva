@@ -21,3 +21,6 @@ instance/
 
 # Logs
 *.log
+
+# Logs directory
+logs/
