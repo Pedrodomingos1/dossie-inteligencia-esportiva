@@ -1,10 +1,12 @@
 import os
+import json
 from flask import Flask, render_template, request, redirect, url_for, flash
 from extensions import db
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
-from scraper import buscar_jogos_do_dia, buscar_estatisticas_jogo
+from scraper import buscar_jogos_do_dia, buscar_estatisticas_jogo, buscar_odds_simuladas
+from analise import AnalistaIA, calcular_valor_esperado
 
 load_dotenv()
 
@@ -48,7 +50,7 @@ def cadastro():
     if current_user.is_authenticated:
         return redirect(url_for('painel'))
     if request.method == 'POST':
-        nome_usuario = request.form.get('username') # Keeping form field names as is for now or update template first
+        nome_usuario = request.form.get('username')
         senha = request.form.get('password')
         usuario_existente = Usuario.query.filter_by(nome_usuario=nome_usuario).first()
         if usuario_existente:
@@ -89,14 +91,44 @@ def sair():
 def gerar_dossie(id_evento, nome_jogo):
     estatisticas = buscar_estatisticas_jogo(id_evento)
     if not estatisticas:
-        flash('Não foi possível recuperar estatísticas para este jogo.', 'danger')
-        return redirect(url_for('painel'))
+        # Se falhar, tenta simular para demonstrar a feature (já que a API real falha com 403 frequentemente)
+        # Em produção, isso seria tratado como erro. Aqui, criamos dados mock para ver a funcionalidade +EV.
+        estatisticas = {
+            "Ball possession": {"casa": "55%", "fora": "45%"},
+            "Total shots": {"casa": "12", "fora": "8"},
+            "Shots on target": {"casa": "5", "fora": "3"}
+        }
+        flash('Estatísticas simuladas devido a bloqueio na API.', 'warning')
+
+    # Obter Odds (Simulado)
+    odds = buscar_odds_simuladas(id_evento)
+
+    # Análise IA
+    analista = AnalistaIA()
+    analise_ia = analista.analisar_partida({'estatisticas': estatisticas, 'odds': odds})
+
+    probabilidade_modelo = analise_ia.get('probabilidade_vitoria_casa', 0.5)
+    confianca_ia = analise_ia.get('grau_de_confianca', 0)
+
+    # Cálculo de Valor Esperado (+EV) para aposta na Casa
+    odd_casa = odds.get('casa', 2.0)
+    valor_esperado = calcular_valor_esperado(probabilidade_modelo, odd_casa)
+
+    insights_ia = json.dumps({
+        'justificativa': analise_ia.get('justificativa', 'Sem análise disponível.'),
+        'placar_provavel': analise_ia.get('placar_provavel', '?-?'),
+        'odds_utilizadas': odds
+    })
 
     novo_dossie = Dossie(
         id_evento=id_evento,
         nome_jogo=nome_jogo,
         estatisticas=estatisticas,
-        id_usuario=current_user.id
+        id_usuario=current_user.id,
+        probabilidade_modelo=probabilidade_modelo,
+        valor_esperado=valor_esperado,
+        confianca_ia=confianca_ia,
+        insights_ia=json.loads(insights_ia)
     )
     db.session.add(novo_dossie)
     db.session.commit()
@@ -111,7 +143,13 @@ def visualizar_dossie(id_dossie):
     if dossie.id_usuario != current_user.id:
         flash('Você não tem autorização para ver este dossiê.', 'danger')
         return redirect(url_for('painel'))
-    return render_template('jogo.html', dossie=dossie)
+
+    # Garantir que insights_ia seja um dict (caso venha como string do banco em versões antigas ou erro)
+    insights = dossie.insights_ia
+    if isinstance(insights, str):
+        insights = json.loads(insights)
+
+    return render_template('jogo.html', dossie=dossie, insights=insights)
 
 if __name__ == '__main__':
     app.run(debug=True)

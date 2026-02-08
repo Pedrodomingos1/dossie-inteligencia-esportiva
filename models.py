@@ -15,3 +15,9 @@ class Dossie(db.Model):
     estatisticas = db.Column(db.JSON, nullable=False)
     data_criacao = db.Column(db.DateTime(timezone=True), server_default=func.now())
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+
+    # Novos campos para Inteligência Analítica
+    probabilidade_modelo = db.Column(db.Float, nullable=True)
+    valor_esperado = db.Column(db.Float, nullable=True)
+    confianca_ia = db.Column(db.Float, nullable=True)
+    insights_ia = db.Column(db.JSON, nullable=True)

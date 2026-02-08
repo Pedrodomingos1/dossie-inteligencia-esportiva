@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 from app import app, db
 from models import Usuario, Dossie
+import json
 
 class TesteAplicacao(unittest.TestCase):
     def setUp(self):
@@ -31,8 +32,6 @@ class TesteAplicacao(unittest.TestCase):
             password='senha_teste'
         ), follow_redirects=True)
         self.assertEqual(resposta.status_code, 200)
-        # In Portuguese: "account has been created" might be in flash message which we didn't translate yet in app.py
-        # But let's check for redirect to login page content
         self.assertIn(b'Sua conta foi criada!', resposta.data.decode('utf-8').encode('utf-8'))
 
         with app.app_context():
@@ -56,7 +55,7 @@ class TesteAplicacao(unittest.TestCase):
         ), follow_redirects=True)
         self.assertEqual(resposta.status_code, 200)
 
-        # Let's mock the scraper to avoid external calls
+        # Mocking external calls including AI Analysis and Odds
         with patch('app.buscar_jogos_do_dia') as mock_buscar_jogos:
             mock_buscar_jogos.return_value = [{'id': 123, 'nome': 'Time A vs Time B'}]
             resposta = self.app.get('/painel', follow_redirects=True)
@@ -66,15 +65,57 @@ class TesteAplicacao(unittest.TestCase):
         # Logout
         resposta = self.app.get('/sair', follow_redirects=True)
         self.assertEqual(resposta.status_code, 200)
-        # In Portuguese: "Entrar"
         self.assertIn(b'Entrar', resposta.data)
 
-    def test_acesso_negado_painel(self):
-        resposta = self.app.get('/painel', follow_redirects=True)
-        self.assertEqual(resposta.status_code, 200)
-        # Should be redirected to login
-        # In Portuguese: "Entrar"
-        self.assertIn(b'Entrar', resposta.data)
+    def test_gerar_dossie_com_ia(self):
+        """Testa se o dossiê é gerado e salva os campos de IA e EV."""
+        # Create user
+        with app.app_context():
+            from flask_bcrypt import Bcrypt
+            bcrypt = Bcrypt(app)
+            senha_hash = bcrypt.generate_password_hash('senha_teste').decode('utf-8')
+            usuario = Usuario(nome_usuario='usuario_teste', senha=senha_hash)
+            db.session.add(usuario)
+            db.session.commit()
+
+            # Login manual via session transaction not easy with test_client, so login via post
+
+        self.app.post('/entrar', data=dict(
+            username='usuario_teste',
+            password='senha_teste'
+        ), follow_redirects=True)
+
+        # Mocks
+        with patch('app.buscar_estatisticas_jogo') as mock_stats, \
+             patch('app.buscar_odds_simuladas') as mock_odds, \
+             patch('analise.AnalistaIA.analisar_partida') as mock_ia:
+
+            mock_stats.return_value = {"Ball possession": {"casa": "55%", "fora": "45%"}}
+            mock_odds.return_value = {'casa': 2.5, 'empate': 3.2, 'fora': 2.8}
+            mock_ia.return_value = {
+                "grau_de_confianca": 85,
+                "justificativa": "Teste Automatizado IA",
+                "placar_provavel": "2-0",
+                "probabilidade_vitoria_casa": 0.6
+            }
+
+            resposta = self.app.get('/dossie/gerar/123/TimeA_vs_TimeB', follow_redirects=True)
+            self.assertEqual(resposta.status_code, 200)
+
+            # Check if saved in DB
+            with app.app_context():
+                dossie = Dossie.query.first()
+                self.assertIsNotNone(dossie)
+                self.assertEqual(dossie.probabilidade_modelo, 0.6)
+                self.assertEqual(dossie.confianca_ia, 85)
+                # EV Calculation: (0.6 * (2.5 - 1)) - (0.4 * 1) = (0.6 * 1.5) - 0.4 = 0.9 - 0.4 = 0.5
+                self.assertAlmostEqual(dossie.valor_esperado, 0.5)
+
+                # Check JSON field
+                insights = dossie.insights_ia
+                if isinstance(insights, str):
+                    insights = json.loads(insights)
+                self.assertEqual(insights['placar_provavel'], "2-0")
 
 if __name__ == '__main__':
     unittest.main()

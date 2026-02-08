@@ -62,3 +62,14 @@ def buscar_estatisticas_jogo(id_evento):
     except Exception as e:
         print(f"Erro inesperado: {e}")
         return None
+
+def buscar_odds_simuladas(id_evento):
+    """
+    Simula odds para um evento, já que a API de odds não é acessível publicamente sem autenticação.
+    Retorna odds em formato decimal (float).
+    """
+    return {
+        'casa': round(random.uniform(1.5, 3.5), 2),
+        'empate': round(random.uniform(2.8, 4.0), 2),
+        'fora': round(random.uniform(2.0, 5.0), 2)
+    }
