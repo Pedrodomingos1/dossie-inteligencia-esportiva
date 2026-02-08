@@ -134,3 +134,52 @@ a {
     }
     */
 }
+
+/* Premium / Enterprise Styling */
+.card-premium {
+    border: 1px solid #ffd700;
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.2);
+    background: linear-gradient(135deg, #ffffff 0%, #fffef0 100%);
+}
+
+.card-premium .card-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+    color: #ffd700;
+    border-bottom: 2px solid #ffd700;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.badge-premium {
+    background: linear-gradient(45deg, #ffd700, #b8860b);
+    color: #1a1a1a;
+    font-weight: bold;
+    padding: 0.5em 1em;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    vertical-align: middle;
+}
+
+.analista-avatar {
+    width: 64px;
+    height: 64px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffd700;
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    margin-right: 1rem;
+}
+
+.analise-texto {
+    font-family: 'Georgia', serif; /* Fonte serifada para aspecto editorial */
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #333;
+}
