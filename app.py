@@ -12,7 +12,11 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'chave_secreta_padrao_para_desenvolvimento')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///dossie.db')
+
+# Configuração robusta para o caminho do banco de dados (Windows/Linux/OneDrive)
+diretorio_base = os.path.abspath(os.path.dirname(__file__))
+caminho_banco = os.path.join(diretorio_base, 'dossie.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///' + caminho_banco)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
