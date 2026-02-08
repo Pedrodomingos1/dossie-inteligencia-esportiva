@@ -1,12 +1,6 @@
-flask
+Flask
+Flask-Bcrypt
+Flask-Login
+Flask-SQLAlchemy
 requests
 python-dotenv
-Flask-SQLAlchemy
-Flask-Login
-Flask-Bcrypt
-selenium
-webdriver-manager
-greenlet
-playwright
-pyee
-typing_extensions
